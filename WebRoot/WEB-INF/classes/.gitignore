@@ -1,8 +1,2 @@
-/RestAPIConfig.properties
+/doc/
 /com/
-/environment.properties
-/log4j.properties
-/spring-common.xml
-/spring-servlet.xml
-/sysconfig.properties
-/urls.properties
