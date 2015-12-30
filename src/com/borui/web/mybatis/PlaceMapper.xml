@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.borui.web.mapper.PlaceMapper" >
+
+	<sql id="Base_Column_List">
+		id						as "pid",
+		name					as "name",
+		address					as "address",
+		owner					as "owner",
+		count					as "count",
+		phone					as "phone",
+		status					as "status",
+		froma					as "froma",
+		ext1					as "type",
+		ext2					as "telCode",
+		ext3					as "photos",
+		ext4					as "lat",
+		ext5					as "lng",
+		avatar					as "avatar",
+		content					as "content" 
+	</sql>
+	
+	<sql id="queryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="type 			!= null" > and ext1						like concat ( '%', #{type, jdbcType=VARCHAR}, '%' )</if>
+			<if test="owner			!= null" > and owner					=#{owner, jdbcType=VARCHAR}</if>
+			<if test="phone			!= null" > and phone					like concat ( '%', #{phone, jdbcType=VARCHAR}, '%')</if>
+			<if test="name			!= null" > and name						like concat ( '%', #{name, jdbcType=VARCHAR}, '%')</if>
+			<if test="address		!= null" > and address					like concat ( '%', #{address, jdbcType=VARCHAR}, '%')</if>
+			<if test="froma			!= null" > and froma					like concat ( '%', #{froma, jdbcType=VARCHAR}, '%')</if>
+			
+			<!-- 根据显示位置确定是否传递status -->
+			<if test="status	 	!= null" > and status					=#{status, jdbcType=VARCHAR}</if>
+      
+			<!-- 根据id查询多条数据 -->
+			<if test="ids		 		!= null" > and id						in (#{ids, jdbcType=VARCHAR})</if>
+		</trim>
+	</sql>
+  
+	<sql id="page">
+		<if test="pageNo != null and pageSize != null ">
+	 	limit #{pageNo, jdbcType=INTEGER}, #{pageSize, jdbcType=INTEGER}
+		</if>
+	</sql>
+  
+	<sql id="orderBy">
+  	order by status desc, createTimeLong+0 desc
+	</sql>
+	
+	<insert id="add" parameterType="map" >
+    insert into place
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="name				!= null" >name,</if>
+			<if test="phone				!= null" >phone,</if>
+			<if test="avatar 			!= null" >avatar,</if>
+			<if test="count 			!= null" >count,</if>
+			<if test="froma 			!= null" >froma,</if>
+			<if test="content			!= null" >content,</if>
+			<if test="owner				!= null" >owner,</if>
+			<if test="address			!= null" >address,</if>
+			<if test="type				!= null" >ext1,</if>
+			<if test="telCode			!= null" >ext2,</if>
+			<if test="photos			!= null" >ext3,</if>
+			<if test="lat				!= null" >ext4,</if>
+			<if test="lng				!= null" >ext5,</if>
+			<if test="status 			!= null" >status,</if>
+			<if test="createTimeLong	!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="name				!= null" >#{name, jdbcType=VARCHAR},</if>
+			<if test="phone				!= null" >#{phone, jdbcType=VARCHAR},</if>
+			<if test="avatar 			!= null" >#{avatar, jdbcType=VARCHAR},</if>
+			<if test="count				!= null" >#{count, jdbcType=VARCHAR},</if>
+			<if test="froma				!= null" >#{froma, jdbcType=VARCHAR},</if>
+			<if test="content			!= null" >#{content, jdbcType=VARCHAR},</if>
+			<if test="owner				!= null" >#{owner, jdbcType=VARCHAR},</if>
+			<if test="address			!= null" >#{address, jdbcType=VARCHAR},</if>
+			<if test="type				!= null" >#{type, jdbcType=VARCHAR},</if>
+			<if test="telCode			!= null" >#{telCode, jdbcType=VARCHAR},</if>
+			<if test="photos			!= null" >#{photos, jdbcType=VARCHAR},</if>
+			<if test="lat				!= null" >#{lat, jdbcType=VARCHAR},</if>
+			<if test="lng				!= null" >#{lng, jdbcType=VARCHAR},</if>
+			<if test="status 			!= null" >#{status, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong	!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+  
+	<select id="search" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from place
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+	
+	<select id="searchByPK" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from place
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+  
+	<update id="modify" parameterType="hashmap" >
+    update place
+	<set>
+		<if test="name				!= null" >name	 			= 		#{name, jdbcType=VARCHAR},</if>
+		<if test="address 			!= null" >address 			= 		#{address, jdbcType=VARCHAR},</if>
+		<if test="count 			!= null" >count 			= 		#{count, jdbcType=VARCHAR},</if>
+		<if test="phone 			!= null" >phone 			= 		#{phone, jdbcType=VARCHAR},</if>
+		<if test="froma   			!= null" >froma 			= 		#{froma, jdbcType=VARCHAR},</if>
+		<if test="content 			!= null" >content 			= 		#{content, jdbcType=VARCHAR},</if>
+		<if test="avatar  			!= null" >avatar 			= 		#{avatar, jdbcType=VARCHAR},</if>
+		<if test="status	 		!= null" >status 			= 		#{status, jdbcType=VARCHAR},</if>
+		<if test="type		 		!= null" >ext1	 			= 		#{type, jdbcType=VARCHAR},</if>
+		<if test="telCode	 		!= null" >ext2	 			= 		#{telCode, jdbcType=VARCHAR},</if>
+		<if test="photos	 		!= null" >ext3	 			= 		#{photos, jdbcType=VARCHAR},</if>
+		<if test="lat		 		!= null" >ext4	 			= 		#{lat, jdbcType=VARCHAR},</if>
+		<if test="lng		 		!= null" >ext5	 			= 		#{lng, jdbcType=VARCHAR},</if>
+	</set>
+    where id = #{pid, jdbcType=VARCHAR} and owner = #{owner, jdbcType=VARCHAR}
+	</update>
+	
+	<update id="modifyStatus" parameterType="hashmap" >
+    update place
+	<set >
+		<if test="status	 		!= null" >status 			= 		#{status, jdbcType=VARCHAR},</if>
+	</set>
+    where id in (#{ids, jdbcType=VARCHAR}) and owner = #{pid, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="del" parameterType="hashmap" >
+  	delete from place where id = #{pid, jdbcType=VARCHAR}
+	</delete>
+</mapper>

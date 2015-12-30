@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.borui.web.mapper.MessageMapper" >
+<sql id="Base_Column_List" >
+		id					as "pid",
+	    content				as "alert",
+	    createTimeLong		as "createDate",
+	    ext1				as "msgType",
+	    status				as "isRead" 
+	</sql>
+	
+	<sql id="queryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="userId		 		!= null" > and userId						=#{userId, jdbcType=VARCHAR}</if>
+		</trim>
+	</sql>
+	  
+	<sql id="page">
+		<if test="pageNo != null and pageSize != null ">
+	 	limit #{pageNo, jdbcType=INTEGER}, #{pageSize, jdbcType=INTEGER}
+		</if>
+	</sql>
+	
+	<sql id="orderBy">
+	  	order by createTimeLong+0 desc
+	</sql>
+	
+	<select id="search" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from messages
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+	
+	<insert id="insert" parameterType="map">
+  	insert into messages
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="userId 		!= null" >userId,</if>
+			<if test="type 			!= null" >ext1,</if>
+			<if test="info			!= null" >content,</if>
+			<if test="status 		!= null" >status,</if>
+			<if test="time	 		!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="userId	 	!= null" >#{userId, jdbcType=VARCHAR},</if>
+			<if test="type 			!= null" >#{type, jdbcType=VARCHAR},</if>
+			<if test="info 			!= null" >#{info, jdbcType=VARCHAR},</if>
+			<if test="status		!= null" >#{status, jdbcType=VARCHAR},</if>
+			<if test="time 			!= null" >#{time, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+	
+	<update id="modify" parameterType="map" >
+    update messages
+		<set >
+			<if test="status != null" > status = #{status,jdbcType=VARCHAR},</if>
+		</set>
+    where id = #{chk, jdbcType=VARCHAR} and userId = #{userId, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="delete">
+		 delete from messages where id = #{chk, jdbcType=VARCHAR} and userId = #{userId, jdbcType=VARCHAR}
+	</delete>
+</mapper>

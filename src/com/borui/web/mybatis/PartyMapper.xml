@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.borui.web.mapper.PartyMapper" >
+	
+	<sql id="Base_Column_List" >
+		id					as "pid",
+	    name				as "name", 
+	    start				as "start", 
+	    type				as "type",
+	    end					as "end",
+	    address 			as "address", 
+	    city 				as "city", 
+	    count 				as "count", 
+	    cost		 		as "cost", 
+	    inviteobject		as "inviteobject",
+	    content				as "content",
+	    ext3				as "ext3",
+	    ext1				as "owner",
+	    ext4				as "addressName",
+	    ext5				as "state",
+	    extInt3				as "addressContent",
+	    extInt1 			as "alert", 
+	    extInt2 			as "lng", 
+	    extInt4 			as "lat", 
+	    extInt5				as "import",
+	    status				as "status",
+	    createTimeLong		as "createTimeLong" 
+	</sql>
+  
+	<sql id="queryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="name			!= null" > and name						like concat ( '%', #{name, jdbcType=VARCHAR}, '%' )</if>
+			<if test="city	 		!= null" > and city						=#{city, jdbcType=VARCHAR}</if>
+			<if test="owner 		!= null" > and ext1						=#{owner, jdbcType=VARCHAR}</if>
+			<if test="type	 		!= null" > and type						=#{type, jdbcType=VARCHAR}</if>
+			<if test="import 		!= null" > and extInt5					=#{import, jdbcType=INTEGER}</if>
+			<if test="start 		!= null and end			!= null" > <![CDATA[and start	>=#{start, jdbcType=INTEGER} and end <= #{end, jdbcType=VARCHAR}]]></if>
+		</trim>
+	</sql>
+  
+	<sql id="page">
+		<if test="pageNo != null and pageSize != null ">
+	 	limit #{pageNo, jdbcType=INTEGER}, #{pageSize, jdbcType=INTEGER}
+		</if>
+	</sql>
+  
+	<sql id="orderBy">
+  		order by start+0 desc, createTimeLong+0 desc
+	</sql>
+	  
+	<insert id="add" parameterType="map" >
+    insert into party
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="name			!= null" >name,</if>
+			<if test="type			!= null" >type,</if>
+			<if test="start 		!= null" >start,</if>
+			<if test="end 			!= null" >end,</if>
+			<if test="address 		!= null" >address,</if>
+			<if test="city 			!= null" >city,</if>
+			<if test="count 		!= null" >count,</if>
+			<if test="cost 			!= null" >cost,</if>
+			<if test="inviteobject 	!= null" >inviteobject,</if>
+			<if test="content 		!= null" >content,</if>
+			<if test="status 		!= null" >status,</if>
+			<if test="ext3 			!= null" >ext3,</if>
+			<if test="state			!= null" >ext5,</if>
+			<if test="addressName	!= null" >ext4,</if>
+			<if test="addressTitle	!= null" >extInt3,</if>
+			<if test="lng			!= null" >extInt2,</if>
+			<if test="lat			!= null" >extInt4,</if>
+			<if test="owner			!= null" >ext1,</if>
+			<if test="createTimeLong!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="name			!= null" >#{name, jdbcType=VARCHAR},</if>
+			<if test="type			!= null" >#{type, jdbcType=VARCHAR},</if>
+			<if test="start 		!= null" >#{start, jdbcType=VARCHAR},</if>
+			<if test="end			!= null" >#{end, jdbcType=VARCHAR},</if>
+			<if test="address		!= null" >#{address, jdbcType=VARCHAR},</if>
+			<if test="city			!= null" >#{city, jdbcType=VARCHAR},</if>
+			<if test="count			!= null" >#{count, jdbcType=VARCHAR},</if>
+			<if test="cost			!= null" >#{cost, jdbcType=VARCHAR},</if>
+			<if test="inviteobject	!= null" >#{inviteobject, jdbcType=VARCHAR},</if>
+			<if test="content		!= null" >#{content, jdbcType=VARCHAR},</if>
+			<if test="status		!= null" >#{status, jdbcType=VARCHAR},</if>
+			<if test="ext3			!= null" >#{ext3, jdbcType=VARCHAR},</if>
+			<if test="state			!= null" >#{state, jdbcType=VARCHAR},</if>
+			<if test="addressName	!= null" >#{addressName, jdbcType=VARCHAR},</if>
+			<if test="addressTitle	!= null" >#{addressTitle, jdbcType=VARCHAR},</if>
+			<if test="lng			!= null" >#{lng, jdbcType=VARCHAR},</if>
+			<if test="lat			!= null" >#{lat, jdbcType=VARCHAR},</if>
+			<if test="owner			!= null" >#{owner, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+  
+	<select id="searchByPK" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from party
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+  
+	<select id="search" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from party
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+	
+	<update id="modify" parameterType="hashmap" >
+    update party
+		<set >
+			<if test="name			!= null" >name	 			= 		#{name, jdbcType=VARCHAR},</if>
+			<if test="type 			!= null" >type 				= 		#{type, jdbcType=VARCHAR},</if>
+			<if test="start 		!= null" >start 			= 		#{start, jdbcType=VARCHAR},</if>
+			<if test="end 			!= null" >end	 			= 		#{end, jdbcType=VARCHAR},</if>
+			<if test="address 		!= null" >address	 		= 		#{address, jdbcType=VARCHAR},</if>
+			<if test="city 			!= null" >city	 			= 		#{city, jdbcType=VARCHAR},</if>
+			<if test="count 		!= null" >count	 			= 		#{count, jdbcType=VARCHAR},</if>
+			<if test="cost 			!= null" >cost	 			= 		#{cost, jdbcType=VARCHAR},</if>
+			<if test="inviteobject 	!= null" >inviteobject		= 		#{inviteobject, jdbcType=VARCHAR},</if>
+			<if test="content 		!= null" >content	 		= 		#{content, jdbcType=VARCHAR},</if>
+			<if test="status 		!= null" >status	 		= 		#{status, jdbcType=VARCHAR},</if>
+			<if test="ext3 			!= null" >ext3	 			= 		#{ext3, jdbcType=VARCHAR},</if>
+			<if test="import		!= null" >extInt5 			= 		#{import, jdbcType=VARCHAR},</if>
+			<if test="alert   		!= null" >extInt1 			= 		#{alert, jdbcType=VARCHAR},</if>
+			<if test="lng   		!= null" >extInt2 			= 		#{alert, jdbcType=VARCHAR},</if>
+			<if test="lat   		!= null" >extInt4 			= 		#{alert, jdbcType=VARCHAR},</if>
+		</set>
+    where id = #{pid, jdbcType=VARCHAR}
+	</update>
+	
+	<delete id="del" parameterType="hashmap">
+		delete from party
+		where id = #{pid, jdbcType=VARCHAR}
+	</delete>
+	
+	
+	
+	
+	<!-- 派对记录开始 -->
+	
+	<sql id="Base_Column_ListForLog" >
+		id					as "pid",
+	    partyId				as "partyId", 
+	    userId				as "userId", 
+	    ext1				as "inviteobject", 
+	    partyOwner			as "partyOwner"
+	</sql>
+	
+	<sql id="countNum" >
+		count(id)			as "num" 
+	</sql>
+  
+	<sql id="queryConditionsForLog">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and partyId					=#{pid, jdbcType=VARCHAR}</if>
+			<if test="join 			!= null" > and userId					=#{join, jdbcType=VARCHAR}</if>
+			<if test="partyOwner	!= null" > and partyOwner				=#{partyOwner, jdbcType=VARCHAR}</if>
+			<if test="type			!= null" > and type						=#{type, jdbcType=VARCHAR}</if>
+			<if test="start			!= null" > <![CDATA[and start		 	<=#{time, jdbcType=INTEGER}]]></if>
+			<if test="end			!= null" > <![CDATA[and end		 		>=#{time, jdbcType=INTEGER}]]></if>
+		</trim>
+	</sql>
+  
+  
+	<sql id="orderBy_partyLog">
+  		order by createTimeLong+0 desc
+	</sql>
+	
+	<sql id="groupBy_partyLog">
+  		group by ext1,userId
+	</sql>
+  
+  <insert id="addPartyLog" parameterType="map" >
+    insert into partyLog
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="join				!= null" >userId,</if>
+			<if test="partyOwner		!= null" >partyOwner,</if>
+			<if test="partyId			!= null" >partyId,</if>
+			<if test="inviteobject		!= null" >ext1,</if>
+			<if test="createTimeLong	!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="join				!= null" >#{join, jdbcType=VARCHAR},</if>
+			<if test="partyOwner		!= null" >#{partyOwner, jdbcType=VARCHAR},</if>
+			<if test="partyId 			!= null" >#{partyId, jdbcType=VARCHAR},</if>
+			<if test="inviteobject		!= null" >#{inviteobject, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong	!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+	
+	<select id="searchByFKUser" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_ListForLog" />
+  	from partyLog
+		<include refid="queryConditionsForLog" />
+		<include refid="orderBy_partyLog" />
+		<include refid="page" />
+	</select>
+	
+	<select id="countNumByPartyId" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="countNum" />
+  	from partyLog
+		<include refid="queryConditionsForLog" />
+		<include refid="groupBy_partyLog" />
+	</select>
+	
+	<delete id="delPartyLog" parameterType="hashmap">
+		delete from partyLog where partyId = #{partyId, jdbcType=VARCHAR} and userId = #{userId, jdbcType=VARCHAR}
+	</delete>
+	
+</mapper>

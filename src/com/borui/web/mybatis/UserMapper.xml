@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.borui.web.mapper.UserMapper" >
+	
+	
+	<sql id="Base_Column_List" >
+	id					as "pid",
+    name				as "name", 
+    sex					as "sex", 
+    phone				as "phone",
+    pwd					as "pwd",
+    avatar 				as "avatar", 
+    birthday 			as "birthday", 
+    industry 			as "industry", 
+    company		 		as "company", 
+    status				as "status",
+    position			as "position",
+    city				as "city",
+    code 				as "code",
+    parent				as "parent",
+    parentId			as "parentId",
+    ext1				as "complete",
+    ext2				as "isModify",
+    createTimeLong		as "createTimeLong",
+    age					as "age"
+	</sql>
+	
+	<sql id="Industry_Column_List" >
+	id					as "pid"
+	</sql>
+  
+	<sql id="queryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="phone			!= null" > and phone					=#{phone, jdbcType=VARCHAR}</if>
+			<if test="pwd		 	!= null" > and pwd					=#{pwd, jdbcType=VARCHAR}</if>
+			<if test="industry 		!= null" > and industry					=#{industry, jdbcType=VARCHAR}</if>
+			<if test="city	 		!= null" > and city						=#{city, jdbcType=VARCHAR}</if>
+			<if test="parentId 		!= null" > and parentId					=#{parentId, jdbcType=VARCHAR}</if>
+			<if test="status	 	!= null" > and status				=#{status, jdbcType=VARCHAR}</if>
+			<if test="complete 		!= null" > and ext1						=#{complete, jdbcType=VARCHAR}</if>
+      
+			<!-- 根据id查询多条数据 -->
+			<if test="ids		 		!= null" > and id					in (#{ids, jdbcType=VARCHAR})</if>
+		</trim>
+	</sql>
+	
+	<sql id="industryQueryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="status	 		!= null" > and status				=#{status, jdbcType=VARCHAR}</if>
+      
+			<!-- 根据id查询多条数据 -->
+			<if test="industries 		!= null" > and industry				in (#{industries, jdbcType=VARCHAR})</if>
+		</trim>
+	</sql>
+	
+	<sql id="Base_Column_List_address" >
+	owner					as "owner",
+	who						as "who"
+	</sql>
+  
+	<sql id="queryConditions_address">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="owner			!= null" > and owner					=#{owner, jdbcType=VARCHAR}</if>
+		</trim>
+	</sql>
+  
+	<sql id="page">
+		<if test="pageNo != null and pageSize != null ">
+	 	limit #{pageNo, jdbcType=INTEGER}, #{pageSize, jdbcType=INTEGER}
+		</if>
+	</sql>
+  
+	<sql id="orderBy">
+  		order by createTimeLong+0 asc
+	</sql>
+  
+	<insert id="add" parameterType="map" >
+    insert into user 
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="name			!= null" >name,</if>
+			<if test="pwd 			!= null" >pwd,</if>
+			<if test="sex 			!= null" >sex,</if>
+			<if test="phone			!= null" >phone,</if>
+			<if test="avatar 			!= null" >avatar,</if>
+			<if test="birthday 		!= null" >birthday,</if>
+			<if test="city			!= null" >city,</if>
+			<if test="age				!= null" >age,</if>
+			<if test="industry		!= null" >industry,</if>
+			<if test="company			!= null" >company,</if>
+			<if test="position		!= null" >position,</if>
+			<if test="code			!= null" >code,</if>
+			<if test="parent			!= null" >parent,</if>
+			<if test="parentId		!= null" >parentId,</if>
+			<if test="status 			!= null" >status,</if>
+			<if test="ext1 			!= null" >ext1,</if>
+			<if test="createTimeLong	!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="name			!= null" >#{name, jdbcType=VARCHAR},</if>
+			<if test="pwd 			!= null" >#{pwd, jdbcType=VARCHAR},</if>
+			<if test="sex 			!= null" >#{sex, jdbcType=VARCHAR},</if>
+			<if test="phone			!= null" >#{phone, jdbcType=VARCHAR},</if>
+			<if test="avatar 			!= null" >#{avatar, jdbcType=VARCHAR},</if>
+			<if test="birthday 		!= null" >#{birthday, jdbcType=VARCHAR},</if>
+			<if test="city			!= null" >#{city, jdbcType=VARCHAR},</if>
+			<if test="age				!= null" >#{age, jdbcType=VARCHAR},</if>
+			<if test="industry		!= null" >#{industry, jdbcType=VARCHAR},</if>
+			<if test="company			!= null" >#{company, jdbcType=VARCHAR},</if>
+			<if test="position		!= null" >#{position, jdbcType=VARCHAR},</if>
+			<if test="code			!= null" >#{code, jdbcType=VARCHAR},</if>
+			<if test="parent			!= null" >#{parent, jdbcType=VARCHAR},</if>
+			<if test="parentId		!= null" >#{parentId, jdbcType=VARCHAR},</if>
+			<if test="status 			!= null" >#{status, jdbcType=VARCHAR},</if>
+			<if test="ext1 			!= null" >#{ext1, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong	!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+  
+  <insert id="addLinks" parameterType="map" >
+    insert into addresses 
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="owner			!= null" >owner,</if>
+			<if test="who 			!= null" >who,</if>
+			<if test="createTimeLong!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="owner			!= null" >#{owner, jdbcType=VARCHAR},</if>
+			<if test="who 			!= null" >#{who, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+	
+	<select id="searchByPK" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from user
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+  
+	<select id="search" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from user
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+  
+  	<select id="searchByIndustry" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Industry_Column_List" />
+  	from user
+		<include refid="industryQueryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+	
+	<select id="links" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List_address" />
+  	from addresses
+		<include refid="queryConditions_address" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+  
+	<update id="modify" parameterType="hashmap" >
+    update user
+		<set >
+			<if test="name			!= null" >name	 			= 		#{name, jdbcType=VARCHAR},</if>
+			<if test="pwd 			!= null" >pwd 				= 		#{pwd, jdbcType=VARCHAR},</if>
+			<if test="age 			!= null" >age 				= 		#{age, jdbcType=VARCHAR},</if>
+			<if test="avatar 		!= null" >avatar 			= 		#{avatar, jdbcType=VARCHAR},</if>
+			<if test="birthday 		!= null" >birthday 			= 		#{birthday, jdbcType=VARCHAR},</if>
+			<if test="industry 		!= null" >industry 			= 		#{industry, jdbcType=VARCHAR},</if>
+			<if test="company 		!= null" >company 			= 		#{company, jdbcType=VARCHAR},</if>
+			<if test="position 		!= null" >position 			= 		#{position, jdbcType=VARCHAR},</if>
+			<if test="status	 	!= null" >status 			= 		#{status, jdbcType=VARCHAR},</if>
+			<if test="city		 	!= null" >city	 			= 		#{city, jdbcType=VARCHAR},</if>
+			<if test="ext1	 		!= null" >ext1	 			= 		#{ext1, jdbcType=VARCHAR},</if>
+			<if test="ext2	 		!= null" >ext2	 			= 		#{ext2, jdbcType=VARCHAR},</if>
+		</set>
+    where id = #{pid, jdbcType=VARCHAR}
+	</update>
+  
+	<update id="update" parameterType="hashmap" >
+    update user
+		<set >
+			<if test="pwd 			!= null" >pwd 				= 		#{pwd, jdbcType=VARCHAR},</if>
+		</set>
+    where id = #{pid, jdbcType=VARCHAR}
+	</update>
+  
+	<delete id="del" parameterType="hashmap" >
+  	delete from user where id = #{pid, jdbcType=VARCHAR}
+	</delete>
+</mapper>

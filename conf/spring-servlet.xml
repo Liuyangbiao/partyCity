@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/task 
+        http://www.springframework.org/schema/task/spring-task-3.0.xsd"
+	default-autowire="byName">
+
+	<!-- 扫描classpath的包下的所有类，该包路径下的类可以不需要配置bean了 -->
+	<!-- <context:component-scan base-package="com.appointment.web.controller" />  -->
+	<!-- Configures the @Controller programming model -->
+
+	<context:component-scan base-package="com.borui.web">
+		<context:include-filter type="regex" expression=".controller.*"/>
+		<!--context:include-filter type="regex" expression=".task.*"/-->
+	</context:component-scan>
+	
+	<mvc:annotation-driven />
+	<!-- 开启任务注解 -->
+	<task:annotation-driven />
+	
+	<!-- <context:component-scan base-package="com.appointment.web.controller">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan> -->
+
+	<!-- 本地屏蔽掉异常处理，便于查看问题 -->
+	<!--<bean
+		class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="defaultErrorView" value="/exception"></property>
+	</bean>-->
+
+	<!-- Configures Handler Interceptors -->
+	<mvc:interceptors>
+		<!-- Changes the locale when a 'locale' request parameter is sent; e.g. 
+			/?locale=de -->
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+		<bean class="com.borui.web.interceptor.AuthInterceptor">
+			 <!-- <property name="mappingURL" value="="*.do"/> -->
+		</bean> 
+		<bean class="com.borui.web.interceptor.ExceptionInterceptor" />
+	</mvc:interceptors>
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources/ directory -->
+	<mvc:resources mapping="/css/**" location="/css/" />
+	<mvc:resources mapping="/js/**" location="/js/" />
+	<mvc:resources mapping="/images/**" location="/images/" />
+
+	<!-- Saves a locale change using a cookie -->
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.CookieLocaleResolver" />
+
+	<!-- Application Message Bundle <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"> 
+		<property name="basename" value="/WEB-INF/messages/messages" /> <property 
+		name="cacheSeconds" value="0" /> </bean> -->
+
+
+	<!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+
+
+	<!-- Resolves view names to protected .jsp resources within the /WEB-INF/views 
+		directory -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/view/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- 配置ApplicationContextAware让Spring容器传递自己生成的ApplicationContext给我们-guozijian -->
+	<bean id="SpringApplicationContext" class="com.borui.utils.ApplicationContextHelper"></bean> 
+	
+	
+
+	<!-- 配置spring事务 开始 -->
+	<bean id="startQuertz" lazy-init="false" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="scanActivitiesTrigger"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 要调用的工作类 -->
+	<bean id="scanActivityQuartzJob" class="com.borui.web.quartz.ScanActivityQuartzJob"></bean>
+	<!-- 定义调用对象和调用对象的方法 -->
+	
+	
+	<bean id="scanActivitiesDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<!-- 调用的类 -->
+		<property name="targetObject">
+			<ref bean="scanActivityQuartzJob"/>
+		</property>
+		<!-- 调用类中的方法 -->
+		<property name="targetMethod">
+			<value>scanActivities</value>
+		</property>
+	</bean>
+
+	
+	<!-- 定义触发时间 -->
+	<bean id="scanActivitiesTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="scanActivitiesDetail"/>
+		</property>
+		<!-- cron表达式 -->
+		<property name="cronExpression">
+			<value>0 */10 * * * ?</value>
+		</property>
+	</bean>
+	
+	<!-- spring事务配置结束 -->
+    
+</beans>

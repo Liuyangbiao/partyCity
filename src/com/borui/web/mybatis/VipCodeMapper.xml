@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.borui.web.mapper.VipCodeMapper" >
+	<sql id="Base_Column_List" >
+		id					as "pid",
+	    vipCode				as "code", 
+	    owner				as "owner", 
+	    createTimeLong		as "time",
+	    status				as "status" 
+	</sql>
+  
+	<sql id="queryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="owner			!= null" > and owner					=#{owner, jdbcType=VARCHAR}</if>
+			<if test="code			!= null" > and vipCode					=#{code, jdbcType=VARCHAR}</if>
+		</trim>
+	</sql>
+	  
+	<insert id="add" parameterType="map" >
+    insert into vipCode
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="code			!= null" >vipCode,</if>
+			<if test="owner			!= null" >owner,</if>
+			<if test="createTimeLong!= null" >createTimeLong,</if>
+			<if test="status 		!= null" >status,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="code			!= null" >#{code, jdbcType=VARCHAR},</if>
+			<if test="owner			!= null" >#{owner, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+			<if test="status		!= null" >#{status, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+
+	<select id="search" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from vipCode
+		<include refid="queryConditions" />
+	</select>
+	
+	<update id="modify" parameterType="hashmap" >
+    update vipCode
+		<set >
+			<if test="status		!= null" >status			= 		#{status, jdbcType=VARCHAR},</if>
+		</set>
+    where id = #{pid, jdbcType=VARCHAR}
+	</update>
+	
+</mapper>

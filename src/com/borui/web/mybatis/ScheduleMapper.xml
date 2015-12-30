@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.borui.web.mapper.ScheduleMapper" >
+	
+	<sql id="Base_Column_List" >
+	id					as "pid",
+    owner				as "owner", 
+    title				as "title", 
+    start				as "start",
+    end					as "end",
+    ext3 				as "push", 
+    ext1 				as "type", 
+    ext2				as "partyId", 
+    extInt1 			as "alert", 
+    createTimeLong		as "createTimeLong"
+	</sql>
+	
+	<sql id="queryConditions">
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="owner			!= null" > and owner					=#{owner, jdbcType=VARCHAR}</if>
+			<if test="partyId	 	!= null" > and ext2						=#{partyId, jdbcType=VARCHAR}</if>
+			<if test="title		 	!= null" > and title					=#{title, jdbcType=VARCHAR}</if>
+			<if test="alert		 	!= null" > and extInt1					=#{alert, jdbcType=INTEGER}</if>
+			<if test="start	 		!= null and end		!= null" > <![CDATA[and start	>=#{start, jdbcType=INTEGER} and start <= #{end, jdbcType=VARCHAR}]]></if>
+      
+			<!-- 根据id查询多条数据 -->
+			<if test="ids		 		!= null" > and id						in (#{ids, jdbcType=VARCHAR})</if>
+		</trim>
+	</sql>
+
+	<insert id="add" parameterType="map" >
+    insert into schedule
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="owner			!= null" >owner,</if>
+			<if test="title			!= null" >title,</if>
+			<if test="start 			!= null" >start,</if>
+			<if test="end 			!= null" >end,</if>
+			<if test="type 			!= null" >ext1,</if>
+			<if test="partyId			!= null" >ext2,</if>
+			<if test="createTimeLong	!= null" >createTimeLong,</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="owner			!= null" >#{owner, jdbcType=VARCHAR},</if>
+			<if test="title			!= null" >#{title, jdbcType=VARCHAR},</if>
+			<if test="start 			!= null" >#{start, jdbcType=VARCHAR},</if>
+			<if test="end				!= null" >#{end, jdbcType=VARCHAR},</if>
+			<if test="type			!= null" >#{type, jdbcType=VARCHAR},</if>
+			<if test="partyId			!= null" >#{partyId, jdbcType=VARCHAR},</if>
+			<if test="createTimeLong	!= null" >#{createTimeLong, jdbcType=VARCHAR},</if>
+		</trim>
+	</insert>
+  
+	<select id="searchByPK" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from schedule
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+  
+	<select id="search" resultType="hashmap" parameterType="map">
+  	select 
+		<include refid="Base_Column_List" />
+  	from schedule
+		<include refid="queryConditions" />
+		<include refid="orderBy" />
+		<include refid="page" />
+	</select>
+	
+	<sql id="page">
+		<if test="pageNo != null and pageSize != null ">
+	 	limit #{pageNo, jdbcType=INTEGER}, #{pageSize, jdbcType=INTEGER}
+		</if>
+	</sql>
+  
+	<sql id="orderBy">
+  	order by start+0 asc
+	</sql>
+  
+  
+	<update id="modify" parameterType="hashmap" >
+    update schedule
+		<set >
+			<if test="owner			!= null" >owner	 			= 		#{owner, jdbcType=VARCHAR},</if>
+			<if test="title 		!= null" >title 			= 		#{title, jdbcType=VARCHAR},</if>
+			<if test="start 		!= null" >start 			= 		#{start, jdbcType=VARCHAR},</if>
+			<if test="end 			!= null" >end	 			= 		#{end, jdbcType=VARCHAR},</if>
+			<if test="push 			!= null" >ext3	 			= 		#{push, jdbcType=VARCHAR},</if>
+			<if test="alert   		!= null" >extInt1 			= 		#{alert, jdbcType=VARCHAR},</if>
+		</set>
+    	<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="owner			!= null" > and owner					=#{owner, jdbcType=VARCHAR}</if>
+			<if test="partyId	 	!= null" > and ext2						=#{partyId, jdbcType=VARCHAR}</if>
+		</trim>
+	</update>
+	
+	<delete id="del" parameterType="hashmap">
+		delete from schedule
+		<trim prefix="where" prefixOverrides="and|or">
+			<if test="pid 			!= null" > and id						=#{pid, jdbcType=VARCHAR}</if>
+			<if test="owner			!= null" > and owner					=#{owner, jdbcType=VARCHAR}</if>
+			<if test="partyId	 	!= null" > and ext2						=#{partyId, jdbcType=VARCHAR}</if>
+		</trim>
+	</delete>
+  
+</mapper>
